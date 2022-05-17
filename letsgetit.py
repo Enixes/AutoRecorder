@@ -10,22 +10,25 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 import win32api
 
+def login():
+    driver.find_element_by_id("email").send_keys("itsasusingh@gmail.com")
+    driver.find_element_by_id("password").send_keys("Enixes@13")
+    driver.find_element(By.XPATH, '//button[text()="LOGIN"]').click()
 
 chrome_options = Options()
-chrome_options.add_extension(r'D:\as\Auto Clicker\ScrcastScreenRecorder13.crx')
-driver = webdriver.Chrome(chrome_options=chrome_options, executable_path=r'D:\as\Auto Clicker\chromedriver.exe')
+chrome_options.add_extension(r'D:\as\Auto Clicker\AutoRecorder\ScrcastScreenRecorder13.crx')
+driver = webdriver.Chrome(chrome_options=chrome_options, executable_path=r'D:\as\Auto Clicker\AutoRecorder\chromedriver.exe')
 win32api.MessageBox(0, 'Start Recording Now', 'Alert', 0x00001000)
 # driver = webdriver.Chrome(r"D:\as\Auto Clicker\chromedriver.exe")
-driver.get("https://gate.appliedroots.com/lecture/10/engineering-discrete-mathematics/712/why-learn-calculus/16/calculus")
+# driver.get("https://gate.appliedroots.com/lecture/10/engineering-discrete-mathematics/1040/planar-graphs/23/graph-theory")
+driver.get("https://gate.appliedroots.com/lecture/11/computer-networks/1416/token-passing-efficiency/52/data-link-layer-and-lan-protocols")
 driver.maximize_window()
 time.sleep(2) 
 driver.switch_to.window(window_name=driver.window_handles[0])
 # driver.close()
 
 
-driver.find_element_by_id("email").send_keys("itsasusingh@gmail.com")
-driver.find_element_by_id("password").send_keys("Enixes@13")
-driver.find_element(By.XPATH, '//button[text()="LOGIN"]').click()
+login()
 
 # find_elements(By.CSS_SELECTOR, ".elements__StyledListItem-sc-197zmwo-0.QbTKh")
 chapters = driver.find_elements(By.CSS_SELECTOR, ".card-body.px-4.p-2.card-body-n")
@@ -49,7 +52,11 @@ def click(element, noOfClicks):
 
 while(number_of_chapters > 0):
     time.sleep(2)
+    if  len(driver.find_elements_by_id("email")) != 0:
+        login()
     element = driver.find_element_by_xpath("//span[contains(@class, 'ml-3')]")
+    
+    print("\n---------------------\nRecording chapter " + str(encrypted_video_count + youtube_video_count) + "\n---------------------------------")
     print(element.text)
     duration = int(element.text.split(" ")[1])
     if (len(driver.find_elements_by_id("my-video")) != 0):
@@ -78,18 +85,21 @@ while(number_of_chapters > 0):
         # driver.executeScript("arguments[0].scrollIntoView(true);", nextLectureElement)
         time.sleep(5)
         total_time += sleepTime
-        if (total_time/3600 > 3):
+        if (total_time/3600 > 1):
             win32api.MessageBox(0, 'Stop Recording Now', 'Alert', 0x00001000)
             break
+        print("Total Time: " + str(total_time))
         nextLectureElement.click()
 
     elif (len(driver.find_elements_by_xpath('//iframe[starts-with(@src, "https://www.youtube.com/embed")]')) != 0):
+        win32api.MessageBox(0, 'Youtube Video Detected!! Download it', 'Aborting', 0x00001000)
+        break
         driver.switch_to.frame(driver.find_element_by_xpath('//iframe[starts-with(@src, "https://www.youtube.com/embed")]'))
         WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//button[@aria-label="Play"]'))).click()
         print("Youtube Video Detected")
         youtube_video_count += 1
         time.sleep(2)   
-        sleepTime = ((duration*60)/3) + 5
+        sleepTime = ((duration*60)) + 5
         print("Sleeping for " + str(int(sleepTime/60)) + " minutes " + str(sleepTime%60) + " seconds")
         time.sleep(sleepTime)
 
@@ -99,15 +109,19 @@ while(number_of_chapters > 0):
         # driver.executeScript("arguments[0].scrollIntoView(true);", nextLectureElement)
         time.sleep(5)
         total_time += sleepTime
-        if (total_time/3600 > 3):
+        if (total_time/3600 > 1):
             win32api.MessageBox(0, 'hello', 'title', 0x00001000)
             break
+        print("Total Time: " + str(total_time))
         nextLectureElement.click()
         # click_complete_button()
             
+    else:
+        win32api.MessageBox(0, 'Youtube Video Detected!! Download it', 'Aborting', 0x00001000)
+        break
 
 
-print("Number of enrypted videos in this topic" + str(encrypted_video_count))   
+print("Number of encrypted videos in this topic" + str(encrypted_video_count))   
 print("Number of youtube videos in this topic" + str(youtube_video_count))    
 
     
